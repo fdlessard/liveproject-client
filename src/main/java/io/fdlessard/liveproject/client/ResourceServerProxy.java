@@ -7,6 +7,8 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.List;
+
 @Component
 public class ResourceServerProxy {
 
@@ -28,12 +30,11 @@ public class ResourceServerProxy {
         this.restTemplate = restTemplate;
     }
 
-
-    public String callDemo() {
+    public String getAdvice() {
 
         String token = tokenManager.getAccessToken();
 
-        String url = resourceServerURL + "/demo";
+        String url = resourceServerURL + "/advice";
 
         HttpHeaders headers = new HttpHeaders();
         headers.add(AUTHORIZATION, "Bearer " + token);
@@ -44,4 +45,18 @@ public class ResourceServerProxy {
 
         return response.getBody();
     }
+
+    public void sendAdvice(List<HealthAdvice> healthAdvices) {
+        String token = tokenManager.getAccessToken();
+
+        String url = resourceServerURL + "/advice";
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(AUTHORIZATION, "Bearer " + token);
+        HttpEntity<List<HealthAdvice>> request =
+                new HttpEntity<>(healthAdvices, headers);
+
+        restTemplate.postForObject(url, request, Void.class);
+    }
+
 }
